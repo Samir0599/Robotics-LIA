@@ -1,0 +1,106 @@
+//Libraries 
+#include <IRremote.h>
+
+//Motor A
+int InputA = 8;
+int PwmA = 5;
+
+//Motor B
+int InputB = 7;
+int PwmB = 6;
+
+//STBY
+int Standby = 3;
+
+//InfraRed
+int IRreceive = 9;
+
+//Arrows
+int Up = 70;
+int Right = 67;
+int Left = 68;
+int Down = 21;
+int Ok = 64;
+
+void setup(){
+pinMode(InputA, OUTPUT);
+pinMode(PwmA, OUTPUT);
+pinMode(InputB, OUTPUT);
+pinMode(PwmB, OUTPUT);
+digitalWrite(Standby, 1);
+  
+Serial.begin(9600);
+IrReceiver.begin(IRreceive, ENABLE_LED_FEEDBACK);
+}
+
+void loop(){
+if (IrReceiver.decode()){
+Serial.println(IrReceiver.decodedIRData.command);
+if(IrReceiver.decodedIRData.command == Ok){
+ Stop();
+}
+else if(IrReceiver.decodedIRData.command == Up){
+ ForwardRight(100);
+}
+else if(IrReceiver.decodedIRData.command == Right){
+ TurnRight(100);
+ delay(450);
+ Stop();
+}
+else if(IrReceiver.decodedIRData.command == Left){
+ TurnLeft(100);
+ delay(450);
+ Stop();
+}
+else if(IrReceiver.decodedIRData.command == Down){
+ Reverse(100);
+}
+IrReceiver.resume();
+ }
+}
+
+void ForwardRight(int speed){
+  digitalWrite(InputA, 1);
+  analogWrite(PwmA, speed);
+  digitalWrite(InputB, 1);
+  analogWrite(PwmB, speed);
+  delay(2000);
+  digitalWrite(InputA, 1);
+  analogWrite(PwmA, speed);
+  digitalWrite(InputB, 0);
+  analogWrite(PwmB, speed);
+  delay(1000); 
+  digitalWrite(InputA, 1);
+  analogWrite(PwmA, speed);
+  digitalWrite(InputB, 1);
+  analogWrite(PwmB, speed);
+  delay(2000);
+}
+
+void TurnRight(int speed){
+  digitalWrite(InputA, 1);
+  analogWrite(PwmA, speed);
+  digitalWrite(InputB, 0);
+  analogWrite(PwmB, speed);
+}
+
+void TurnLeft(int speed){
+  digitalWrite(InputA, 0);
+  analogWrite(PwmA, speed);
+  digitalWrite(InputB, 1);
+  analogWrite(PwmB, speed);
+}
+
+void Reverse(int speed){
+  digitalWrite(InputA, 0);
+  analogWrite(PwmA, speed);
+  digitalWrite(InputB, 0);
+  analogWrite(PwmB, speed);
+}
+
+void Stop(){
+  digitalWrite(InputA, 1);
+  analogWrite(PwmA, 0);
+  digitalWrite(InputB, 1);
+  analogWrite(PwmB, 0);
+}
