@@ -1,0 +1,170 @@
+ // Motor A
+int AIN1 = 8;
+int PWMA = 5;
+// Motor B
+int BIN1 = 7;
+int PWMB = 6;
+//STBY
+int STBY = 3;
+//Settings
+int speedA = 100;
+int speedB = 100;
+
+#define trigPin 13
+#define echoPin 12
+float duration, distance;  
+#include <Servo.h>
+Servo myservo;
+int angle = myservo.read();    // initial angle  for servo
+int angleStep =0;
+
+void setup(){
+delay(3000); 
+pinMode(AIN1,OUTPUT);
+pinMode(PWMA,OUTPUT);
+pinMode(BIN1,OUTPUT);
+pinMode(PWMB,OUTPUT);
+digitalWrite(STBY,HIGH); 
+Serial.begin(9600);
+pinMode(trigPin, OUTPUT);
+pinMode(echoPin, INPUT);
+myservo.attach(10);
+}
+
+void Forward()
+{
+// Motors A
+  digitalWrite(AIN1,HIGH);
+  analogWrite(PWMA, speedA);
+// Motors B
+  digitalWrite(BIN1,HIGH);
+  analogWrite(PWMB, speedB);
+}
+
+void Backward(){
+// Motors A
+  digitalWrite(AIN1,LOW);
+  analogWrite(PWMA, speedA);
+// Motors B
+  digitalWrite(BIN1,LOW);
+  analogWrite(PWMB, speedB);
+}
+
+void Right(){
+// Motors A
+  digitalWrite(AIN1,HIGH);
+  analogWrite(PWMA, speedA);
+// Motors B
+  digitalWrite(BIN1,LOW);
+  analogWrite(PWMB, speedB);
+}
+
+void Left(){
+// Motors A
+  digitalWrite(AIN1,LOW);
+  analogWrite(PWMA, speedA);
+// Motors B
+  digitalWrite(BIN1,HIGH);
+  analogWrite(PWMB, speedB);
+}
+
+void LeftForward(){
+// Motors A
+  digitalWrite(AIN1,HIGH);
+  analogWrite(PWMA, speedA);
+// Motors B
+  digitalWrite(BIN1,HIGH);
+  analogWrite(PWMB, speedB/2);
+}
+
+void LeftBackward(){
+// Motors A
+  digitalWrite(AIN1,LOW);
+  analogWrite(PWMA, speedA);
+// Motors B
+  digitalWrite(BIN1,LOW);
+  analogWrite(PWMB, speedB/2);
+}
+
+void RightForward()
+{// Motors A
+  digitalWrite(AIN1,HIGH);
+  analogWrite(PWMA, speedA/2);
+// Motors B
+  digitalWrite(BIN1,HIGH);
+  analogWrite(PWMB, speedB);
+}
+
+void RightBackward(){
+// Motors A
+  digitalWrite(AIN1,LOW);
+  analogWrite(PWMA, speedA/2);
+// Motors B
+  digitalWrite(BIN1,LOW);
+  analogWrite(PWMB, speedB);
+}
+
+void Stop(){
+// Motors A
+  digitalWrite(AIN1,HIGH);
+  analogWrite(PWMA, 0);
+// Motors B
+  digitalWrite(BIN1,HIGH);
+  analogWrite(PWMB, 0);
+} 
+void ultrasonic(){
+  digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+duration = pulseIn(echoPin, HIGH);
+distance = (duration / 58); 
+int distance;
+}
+
+void loop() {
+  distance = (duration/ 2) * 0.0400;   
+  // put your main code here, to run repeatedly:
+  myservo.write(90); 
+ // Forward();
+ ultrasonic();
+ if (distance < 20){
+  Stop();
+  myservo.write(0);
+  delay(200);
+  ultrasonic();
+  if (distance < 20){
+    Stop();
+    myservo.write(180);
+    delay(200);
+    ultrasonic();
+    delay(200);
+    Stop();
+    ultrasonic();
+    if (distance > 20){
+      Left();
+      delay(700);
+      myservo.write(90);
+    }
+    
+    else{
+     Right();
+     delay(700);
+     myservo.write(90);
+       
+    }
+  }
+  else {
+    Backward();
+    delay(500);
+    Left();
+    delay(1400);
+    myservo.write(90);
+   }
+   
+ } 
+ else {
+  Forward();
+ }
+}  
